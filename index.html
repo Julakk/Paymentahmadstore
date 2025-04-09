@@ -1,202 +1,269 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Ahmadstore</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to right, #1e90ff, #8a2be2);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            position: relative;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: black;
-        }
-        p {
-            font-size: 16px;
-            color: black;
-        }
-        .button {
-            display: block;
-            width: 200px;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-        }
-        .payment { background-color: #007bff; }
-        .owner, .Discord { background-color: #28a745; }
-        .payment:hover { background-color: #0056b3; }
-        .owner:hover, .Discord:hover { background-color: #218838; }
+  <canvas id="snowCanvas"></canvas>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment Ahmadstore</title>
+  <style>
+    body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(-45deg, #050505, #050505, #050505, #050505, #050505, #050505);
+  background-size: 600% 600%;
+  animation: rainbowBG 10s ease infinite;
+  color: white;
+  margin: 0;
+  overflow: hidden;
+}
 
-        /* Pop-up */
-        .popup, .popup-dana, .popup-qris {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-            width: 300px;
-        }
-        .popup h2, .popup-dana h2, .popup-qris h2 {
-            color: black;
-            margin-bottom: 15px;
-        }
-        .popup .button, .popup-dana .button, .popup-qris .button {
-            width: 100%;
-            margin: 5px 0;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9;
-        }
-        .copy-box {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 18px;
-            color: black;
-            cursor: pointer;
-            user-select: all;
-        }
-        .qris-img {
-            width: 200px;
-            height: auto;
-            margin-bottom: 10px;
-        }
+    /* Lampu warna-warni */
+    .lights {
+      display: flex;
+      justify-content: center;
+      padding: 20px 0;
+      background-color: #111;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1;
+    }
 
-        /* Salju */
-        .snow {
-            position: fixed;
-            top: -10px;
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-        }
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-    </style>
+    .light {
+      width: 20px;
+      height: 20px;
+      margin: 0 8px;
+      border-radius: 50%;
+      background-color: rgb(10, 10, 10);
+      animation: blink 1s infinite alternate;
+    }
+
+    .light:nth-child(2) { background-color: rgb(7, 7, 7); animation-delay: 0.2s; }
+    .light:nth-child(3) { background-color: rgb(7, 7, 7); animation-delay: 0.4s; }
+    .light:nth-child(4) { background-color: rgb(7, 7, 7); animation-delay: 0.6s; }
+    .light:nth-child(5) { background-color: rgb(10, 10, 10); animation-delay: 0.8s; }
+    .light:nth-child(6) { background-color: rgb(8, 8, 8); animation-delay: 1s; }
+
+    @keyframes blink {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.4; transform: scale(1.2); }
+    }
+    
+  @keyframes rainbowBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+    #loading-screen {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-color: #0f1e2b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+    }
+
+    .spinner {
+      border: 6px solid #1f2d3d;
+      border-top: 6px solid #00f7ff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .container {
+      background-color: #1f2d3d;
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      margin: 120px auto 50px auto;
+      display: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      color: #00f7ff;
+    }
+
+    .qr {
+      margin: 20px 0;
+    }
+
+    .qr a {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    .qr a:hover {
+      transform: scale(1.05);
+    }
+
+    .payment-option {
+      background-color: #2b3a50;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #00f7ff;
+    }
+
+    .wallet-info {
+      margin-top: 10px;
+      background-color: #2b3a50;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .wallet-info p {
+      margin: 5px 0;
+      color: #00f7ff;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .buttons a {
+      background-color: #00f7ff;
+      color: black;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .buttons a:hover {
+      background-color: #00d5dd;
+    }
+    
+    #snowCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+  </style>
 </head>
 <body>
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
 
-    <h1>Welcome Di Payment Ahmadstore</h1>
-    <p>Sertakan Bukti Transfer Dan Send Foto Transfer <br> dengan keaslian dan kirim ke penjual</p>
+  <!-- Lampu warna-warni -->
+  <div class="lights">
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+  </div>
 
-    <button class="button payment" onclick="showPopup()">Payment</button>
-    <a href="https://wa.me/6287854851480" class="button owner" target="_blank">Owner</a>
-    <a href="https://discord.gg/zw2J5w89" class="button Discord" target="_blank">Discord</a>
-
-    <!-- Pop-up pilihan pembayaran -->
-    <div class="overlay" id="overlay" onclick="closeAllPopups()"></div>
-    <div class="popup" id="popup">
-        <h2>Pilih Metode Pembayaran</h2>
-        <button class="button payment" onclick="showDanaPopup()">Dana</button>
-        <button class="button payment" onclick="showQrisPopup()">QRIS</button>
-        <button class="button owner" onclick="closeAllPopups()">Tutup</button>
+  <div class="container" id="main-content">
+    <h2>Payment Ahmadstore</h2>
+    <p>Silahkan pilih salah satu metode pembayaran di bawah ini</p>
+    <div class="qr">
+      <a href="Kode QRIS Ahmad Store, LNG NGGN.png" target="_blank">
+        <img src="Kode QRIS Ahmad Store, LNG NGGN.png" alt="QR Code" width="200" />
+      </a>
+    </div>
+    <p>Tekan QR untuk memperbesar atau menyimpan</p>
+    <div class="wallet-info">
+      <p>Nomor DANA:</p>
+      <p>0878-0355-0445 (Ahmad Store)</p>
     </div>
 
-    <!-- Pop-up untuk Dana -->
-    <div class="popup-dana" id="popupDana">
-        <h2>Nomor Dana</h2>
-        <div class="copy-box" id="nomorDana" onclick="copyText('nomorDana')">087803550445</div>
-        <p>Klik untuk menyalin</p>
-        <button class="button owner" onclick="closeAllPopups()">Tutup</button>
+    <div class="buttons">
+      <a href="https://wa.me/6287854851480">WhatsApp</a>
+      <a href="https://discord.gg/87RQPUFMSK">Discord</a>
+      <a href="#">Back</a>
     </div>
+  </div>
 
-    <!-- Pop-up untuk QRIS -->
-    <div class="popup-qris" id="popupQris">
-        <h2>Scan QRIS</h2>
-        <img src="qris.png" alt="QRIS" class="qris-img">
-        <p>Silakan scan untuk melakukan pembayaran</p>
-        <button class="button owner" onclick="closeAllPopups()">Tutup</button>
-    </div>
+  <script>
+  window.addEventListener("load", function () {
+      const loading = document.getElementById("loading-screen");
+      const content = document.getElementById("main-content");
 
-    <script>
-        function showPopup() {
-            document.getElementById("popup").style.display = "block";
-            document.getElementById("overlay").style.display = "block";
-        }
+      setTimeout(() => {
+        loading.style.display = "none";
+        content.style.display = "block";
+        document.body.style.overflow = "auto";
+      }, 1500);
+    });
+    
+  const canvas = document.getElementById("snowCanvas");
+  const ctx = canvas.getContext("2d");
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
 
-        function showDanaPopup() {
-            closeAllPopups();
-            document.getElementById("popupDana").style.display = "block";
-            document.getElementById("overlay").style.display = "block";
-        }
+  let snowflakes = [];
 
-        function showQrisPopup() {
-            closeAllPopups();
-            document.getElementById("popupQris").style.display = "block";
-            document.getElementById("overlay").style.display = "block";
-        }
+  function createSnowflakes() {
+    for (let i = 0; i < 100; i++) {
+      snowflakes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 3 + 1,
+        speedY: Math.random() * 2 + 1,
+        speedX: Math.random() * 1 - 0.5
+      });
+    }
+  }
 
-        function closeAllPopups() {
-            document.getElementById("popup").style.display = "none";
-            document.getElementById("popupDana").style.display = "none";
-            document.getElementById("popupQris").style.display = "none";
-            document.getElementById("overlay").style.display = "none";
-        }
+  function updateSnowflakes() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (let flake of snowflakes) {
+      ctx.moveTo(flake.x, flake.y);
+      ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+    }
+    ctx.fill();
 
-        function copyText(id) {
-            let text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Nomor berhasil disalin: " + text);
-            });
-        }
+    for (let flake of snowflakes) {
+      flake.y += flake.speedY;
+      flake.x += flake.speedX;
 
-        // Efek salju
-        function createSnow() {
-            let snow = document.createElement("div");
-            snow.classList.add("snow");
-            snow.style.left = Math.random() * 100 + "vw";
-            snow.style.animationDuration = Math.random() * 3 + 2 + "s";
-            snow.style.width = snow.style.height = Math.random() * 5 + 5 + "px";
-            document.body.appendChild(snow);
+      if (flake.y > height) flake.y = 0;
+      if (flake.x > width) flake.x = 0;
+      if (flake.x < 0) flake.x = width;
+    }
 
-            setTimeout(() => {
-                snow.remove();
-            }, 5000);
-        }
+    requestAnimationFrame(updateSnowflakes);
+  }
 
-        setInterval(createSnow, 100);
-    </script>
+  createSnowflakes();
+  updateSnowflakes();
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+</script>
 
 </body>
 </html>
